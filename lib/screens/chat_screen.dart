@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:mychat/screens/calling_screen.dart';
 import 'package:mychat/services/signalling.service.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -175,6 +176,11 @@ void getAllChats() async {
     _messageController.clear(); // Clear input after sending
   }
 
+  String formatTime(String createdAt) {
+  DateTime parsedDate = DateTime.parse(createdAt);
+  return DateFormat.jm().format(parsedDate); // Example: 2:30 PM
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -199,42 +205,93 @@ void getAllChats() async {
             children: [
               // Chat Messages List
               Expanded(
-                child: ListView.builder(
-                  itemCount: jsonList.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      child: Align(
-                        alignment: jsonList[index]['senderId'] == userId ? Alignment.centerRight : Alignment.centerLeft, // Align messages
-                        child: Container(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.6, // Reduce width to 60% of screen
-                          ),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: jsonList[index]['senderId'] == userId ? Color(0XFF27272A) : Color(0XFFE3E3E3), //#27272A
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(jsonList[index]['message'], style: TextStyle(fontSize: 16,color: jsonList[index]['senderId'] == userId ? Colors.white : Colors.black,)),
-                              SizedBox(height: 5),
-                              // Text('Time', 
-                              // style: TextStyle(
-                              //   fontSize: 12, 
-                              //   color: jsonList[index]['senderId'] == userId ? Colors.white : Colors.black,
-                              //   )),
-                            
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+  child: ListView.builder(
+    itemCount: jsonList.length,
+    itemBuilder: (context, index) {
+      bool isMe = jsonList[index]['senderId'] == userId;
+      
+      // ✅ Extract date and time from 'createdAt'
+      DateTime messageTime = DateTime.parse(jsonList[index]['createdAt']);
+      String formattedTime = DateFormat('hh:mm a').format(messageTime);
+      String formattedDate = DateFormat('dd MMM yyyy').format(messageTime);
+
+      // ✅ Check if this is the first message of the day
+      bool showDate = index == 0 ||
+          DateFormat('dd MMM yyyy').format(DateTime.parse(jsonList[index - 1]['createdAt'])) != formattedDate;
+
+      return Column(
+        children: [
+          // ✅ Show Date Header if it's the first message of the day
+          if (showDate)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    formattedDate,
+                    style: TextStyle(fontSize: 14, color: Colors.black87),
+                  ),
                 ),
               ),
-          
+            ),
+
+          // ✅ Chat Bubble
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Align(
+              alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.6,
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: isMe ? Color(0XFF27272A) : Color(0XFFE3E3E3),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(isMe ? 10 : 0),
+                        topRight: Radius.circular(isMe ? 0 : 10),
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      jsonList[index]['message'],
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: isMe ? Colors.white : Colors.black,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  
+                  // ✅ Time Display
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5, right: 5, top: 2),
+                    child: Text(
+                      formattedTime,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  ),
+),
               // Message Input Field
               Padding(
                 padding: const EdgeInsets.all(10.0),

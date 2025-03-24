@@ -68,9 +68,8 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   width: 100,
                   height: 100,
-                  child: Image(
-                    image: AssetImage('assets/login.png'),
-                    )),
+                  child: Image(image: AssetImage('assets/login.png')),
+                ),
                 //Icon(Icons.person_outline_outlined, size: 100, color: Colors.black),
                 const SizedBox(height: 32),
 
@@ -89,8 +88,8 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email),
-                    border:  OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   validator: (value) {
@@ -124,8 +123,8 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                     ),
-                    border:  OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   validator: (value) {
@@ -168,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         );
 
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => HomeScreen()),
                         );
@@ -197,7 +196,10 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('New user?', style: TextStyle(color:Color(0xFF4B5563), fontSize: 16),),
+                    const Text(
+                      'New user?',
+                      style: TextStyle(color: Color(0xFF4B5563), fontSize: 16),
+                    ),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -209,7 +211,10 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         );
                       },
-                      child: const Text('Signup', style: TextStyle(color:Colors.black, fontSize: 16)),
+                      child: const Text(
+                        'Signup',
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                      ),
                     ),
                   ],
                 ),

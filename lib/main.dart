@@ -24,6 +24,7 @@ class VideoCallApp extends StatelessWidget {
   // generate callerID of local user
   final String selfCallerID =
       Random().nextInt(999999).toString().padLeft(6, '0');
+      final box = GetStorage();
       
 
   @override
@@ -34,16 +35,11 @@ class VideoCallApp extends StatelessWidget {
       selfCallerID: selfCallerID,
     );
 
+    String? currentUserId = box.read('mySocketId'); // Read stored user ID
+
     // return material app
     return MaterialApp(
-      // darkTheme: ThemeData.dark().copyWith(
-      //   useMaterial3: true,
-      //   colorScheme: const ColorScheme.dark(),
-      // ),
-      // themeMode: ThemeMode.dark,
-      // home: JoinScreen(selfCallerId: selfCallerID),
-      //home: SignupPage(socketId: selfCallerID,),
-      home: LoginPage(socketId: selfCallerID),
+       home: currentUserId != null ? HomeScreen() : LoginPage(socketId: selfCallerID), // Redirect
       debugShowCheckedModeBanner: false,
     );
   }
