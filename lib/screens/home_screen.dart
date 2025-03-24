@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:mychat/screens/chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final Dio dio = Dio();
   List<dynamic> jsonList = [];
   bool isLoading = true; // Track loading state
+  GetStorage box = GetStorage();
 
   @override
   void initState() {
@@ -20,23 +22,29 @@ class _HomeScreenState extends State<HomeScreen> {
     getUsers();
   }
 
-  Future<void> getUsers() async {
-    try {
-      var response = await dio.get(
-        'https://mychat-backend-fml5.onrender.com/user',
-      );
-      if (response.statusCode == 200) {
-        setState(() {
-          jsonList = response.data as List<dynamic>;
-          isLoading = false;
-        });
-      } else {
-        print('Response status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error fetching users: $e');
+Future<void> getUsers() async {
+  try {
+    var response = await dio.get(
+      'https://mychat-backend-fml5.onrender.com/user',
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> allUsers = response.data as List<dynamic>;
+
+      // Replace 'currentUserId' with the actual variable storing the logged-in user's ID
+      String currentUserId = box.read('mySocketId') ?? 'No User';; 
+
+      setState(() {
+        jsonList = allUsers.where((user) => user['id'] != currentUserId).toList();
+        isLoading = false;
+      });
+    } else {
+      print('Response status code: ${response.statusCode}');
     }
+  } catch (e) {
+    print('Error fetching users: $e');
   }
+}
 
   @override
   Widget build(BuildContext context) {

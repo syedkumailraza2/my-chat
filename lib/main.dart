@@ -43,7 +43,8 @@ class VideoCallApp extends StatelessWidget {
       // themeMode: ThemeMode.dark,
       // home: JoinScreen(selfCallerId: selfCallerID),
       //home: SignupPage(socketId: selfCallerID,),
-      home: LoginPage(socketId: selfCallerID)
+      home: LoginPage(socketId: selfCallerID),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

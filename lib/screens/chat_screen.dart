@@ -19,57 +19,84 @@ class _ChatScreenState extends State<ChatScreen> {
   final box = GetStorage();
   late String userId = box.read('mySocketId') ?? 'No User'; // Get user ID
   final _messageController = TextEditingController();
-  late String RoomId;
+
   final Dio dio = Dio();
   List<dynamic> jsonList = []; 
   dynamic incomingSDPOffer;
 
-@override
+String? RoomId; // ✅ Nullable to prevent LateInitializationError
+
 void initState() {
   super.initState();
-  
-  getAllChats();
+  print("✅ initState() called");
 
   if (socket == null || !(socket!.connected)) {
-    print("Socket is null or not connected, initializing...");
+    print("✅ Socket is null or not connected, initializing...");
     socket = SignallingService.instance.socket;
-  }
 
-  SignallingService.instance.socket!.on("newCall", (data) {
-    print("Incoming Call Event Received: $data");
+    socket!.onConnect((_) {
+      print("✅ Connected to socket");
+      joinRoom(userId, widget.receiverId); // 🔥 Debug: Check if this runs
+    });
+
+    // ✅ Ensure RoomId is set before fetching chats
+    socket!.on("roomJoined", (roomId) {
+      print("🔄 Received roomJoined event with roomId: $roomId");
       if (mounted) {
-        // set SDP Offer of incoming call
-        setState(() => incomingSDPOffer = data);
+        setState(() {
+          RoomId = roomId.toString();
+        });
+        print('😀 Joined Room: $RoomId');
+
+        // 🔥 Fetch chats only after RoomId is set
+        getAllChats();
       }
     });
-  
 
-
-  socket!.onConnect((_) {
-    print("Connected to socket");
-    joinRoom(userId, widget.receiverId);
-  });
-
-  socket!.on("roomJoined", (roomId) {
-    if (mounted) {
-      setState(() {
-        RoomId = roomId;
-      });
-      print('Joined Room: $RoomId');
-      getAllChats();
-    }
-  });
-
-socket!.on("receiveMessage", (data) {
-  if (mounted) {
-    setState(() {
-      jsonList.add(data); // ✅ Append the new message to the list
+    // ✅ Listen for incoming messages and update list
+    socket!.on("receiveMessage", (data) {
+      if (mounted) {
+        setState(() {
+          jsonList.add(data);
+        });
+      }
+      print("📩 New message received: $data");
     });
-  }
-  print("New message received: $data");
-});
 
+    // 🔥 Fallback: Retry fetching chats if RoomId isn't set within 5 sec
+    Future.delayed(Duration(seconds: 5), () {
+      if (RoomId == null) {
+        print("⏳ Room ID not received, retrying getAllChats()...");
+        getAllChats();
+      }
+    });
+
+  } else {
+    print("✅ Socket is already connected, checking RoomId...");
+
+    joinRoom(userId, widget.receiverId); 
+
+    socket!.on("roomJoined", (roomId) {
+      print("🔄 Received roomJoined event with roomId: $roomId");
+      if (mounted) {
+        setState(() {
+          RoomId = roomId.toString();
+        });
+        print('😀 Joined Room: $RoomId');
+
+        // 🔥 Fetch chats only after RoomId is set
+        getAllChats();
+      }
+    });
+
+    if (RoomId != null) {
+      getAllChats(); 
+    } else {
+      print("⚠️ Room ID not set yet, waiting for roomJoined event...");
+    }
+  }
 }
+
 
 @override
 void dispose() {
@@ -101,19 +128,19 @@ _joinCall({
 
 // Fetch all messages for the room
 void getAllChats() async {
-  if (RoomId.isEmpty) {
-    print("Room ID not set yet");
-    return;
-  }
-
+  // if (RoomId.isEmpty) {
+  //   print("Room ID not set yet");
+  //   return;
+  // }
   try {
     var response = await dio.get('https://mychat-backend-fml5.onrender.com/chat/$RoomId'); 
     if (response.statusCode == 200) {
       setState(() {
         jsonList = response.data as List<dynamic>;
+        print('😀 jsonList $jsonList');
       });
     } else {
-      print('Response status code: ${response.statusCode}');
+      print('🤣🤣Response status code: ${response.statusCode}');
     }
   } catch (e) {
     print('Error fetching chats: $e');
@@ -185,15 +212,20 @@ void getAllChats() async {
                           ),
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: jsonList[index]['senderId'] == userId ? Colors.blueGrey[200] : Colors.blueAccent[200],
+                            color: jsonList[index]['senderId'] == userId ? Color(0XFF27272A) : Color(0XFFE3E3E3), //#27272A
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(jsonList[index]['message'], style: TextStyle(fontSize: 16,color: Colors.black)),
+                              Text(jsonList[index]['message'], style: TextStyle(fontSize: 16,color: jsonList[index]['senderId'] == userId ? Colors.white : Colors.black,)),
                               SizedBox(height: 5),
-                              Text('Time', style: TextStyle(fontSize: 12, color: Colors.black54)),
+                              // Text('Time', 
+                              // style: TextStyle(
+                              //   fontSize: 12, 
+                              //   color: jsonList[index]['senderId'] == userId ? Colors.white : Colors.black,
+                              //   )),
+                            
                             ],
                           ),
                         ),
