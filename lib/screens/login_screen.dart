@@ -65,13 +65,19 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // App Logo or Image (optional)
-                const Icon(Icons.account_circle, size: 100, color: Colors.blue),
+                Container(
+                  width: 100,
+                  height: 100,
+                  child: Image(
+                    image: AssetImage('assets/login.png'),
+                    )),
+                //Icon(Icons.person_outline_outlined, size: 100, color: Colors.black),
                 const SizedBox(height: 32),
 
                 // Title
                 const Text(
                   'Login',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -152,32 +158,34 @@ class _LoginPageState extends State<LoginPage> {
 
                         print('User Login ${response}');
 
-                       ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(content: Text(response.data['message'].toString())),
-);
-
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(response.data['message'].toString()),
+                          ),
+                        );
 
                         Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
-                      );
-                      
+                          context,
+                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                        );
                       } catch (e) {
                         print('Error while logging user: ${e}');
                         rethrow; // ✅ Re-throwing error to handle it outside
                       }
-
-                      
                     }
                   },
-                  
+
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Login', style: TextStyle(fontSize: 16)),
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
                 ),
                 const SizedBox(height: 16),
 
@@ -185,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Already have an account?'),
+                    const Text('Already have an account?', style: TextStyle(color:Color(0xFF4B5563), fontSize: 16),),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -197,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         );
                       },
-                      child: const Text('Signup'),
+                      child: const Text('Signup', style: TextStyle(color:Colors.black, fontSize: 16)),
                     ),
                   ],
                 ),
