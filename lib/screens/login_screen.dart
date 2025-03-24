@@ -86,10 +86,12 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(),
+                    border:  OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -103,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
                 // Password field
                 TextFormField(
@@ -122,7 +124,9 @@ class _LoginPageState extends State<LoginPage> {
                         });
                       },
                     ),
-                    border: const OutlineInputBorder(),
+                    border:  OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -193,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Already have an account?', style: TextStyle(color:Color(0xFF4B5563), fontSize: 16),),
+                    const Text('New user?', style: TextStyle(color:Color(0xFF4B5563), fontSize: 16),),
                     TextButton(
                       onPressed: () {
                         Navigator.push(

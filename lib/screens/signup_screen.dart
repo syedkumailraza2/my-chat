@@ -64,31 +64,34 @@ void createUser() async{
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // App Logo or Image (optional)
-                const Icon(
-                  Icons.account_circle,
-                  size: 100,
-                  color: Colors.blue,
-                ),
+                Container(
+                  width: 100,
+                  height: 100,
+                  child: Image(
+                    image: AssetImage('assets/signup.png'),
+                    )),
                 const SizedBox(height: 32),
                 
                 // Title
                 const Text(
                   'Create Account',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 
                 // Name field
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Full Name',
                     prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(),
+                    border:  OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -97,16 +100,18 @@ void createUser() async{
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 
                 // Email field
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(),
+                    border:  OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -118,7 +123,7 @@ void createUser() async{
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 
                 // Password field
                 TextFormField(
@@ -137,7 +142,9 @@ void createUser() async{
                         });
                       },
                     ),
-                    border: const OutlineInputBorder(),
+                    border:  OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -149,13 +156,14 @@ void createUser() async{
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 
                 // Confirm Password field
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: _isConfirmObscure,
                   decoration: InputDecoration(
+
                     labelText: 'Confirm Password',
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
@@ -168,7 +176,9 @@ void createUser() async{
                         });
                       },
                     ),
-                    border: const OutlineInputBorder(),
+                    border:  OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -195,13 +205,14 @@ void createUser() async{
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   child: const Text(
                     'SIGN UP',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -210,12 +221,12 @@ void createUser() async{
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Already have an account?'),
+                    const Text('Already have an account?', style: TextStyle(color:Color(0xFF4B5563), fontSize: 16),),
                     TextButton(
                       onPressed: () {
-                        // Navigate to login page
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage(socketId: widget.socketId)));
                       },
-                      child: const Text('Log in'),
+                      child: const Text('Login', style: TextStyle(color:Colors.black, fontSize: 16)),
                     ),
                   ],
                 ),
